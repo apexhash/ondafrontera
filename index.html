@@ -1,428 +1,234 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🔴 EN VIVO — Onda Frontera</title>
-    <style>
-        * {margin: 0; padding: 0; box-sizing: border-box;}
-        body {
-            background: linear-gradient(135deg, #0f1e33 0%, #1a3555 100%);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 20px;
-            gap: 18px;
-        }
-        .logo-imagen {
-            width: 100%;
-            max-width: 500px;
-            height: auto;
-            border-radius: 20px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
-            border: 2px solid rgba(255, 215, 0, 0.25);
-            margin-top: 10px;
-        }
-        .espacio-auspiciante {
-            width: 100%;
-            max-width: 550px; /* ✅ Agrandado también para acompañar */
-            background: rgba(255, 215, 0, 0.08);
-            border: 2px solid rgba(255, 215, 0, 0.35);
-            border-radius: 14px;
-            padding: 12px;
-            text-align: center;
-            color: #ffd700;
-        }
-        .etiqueta-patrocinador {
-            font-size: 11px;
-            color: #ffd700;
-            opacity: 0.8;
-            margin-bottom: 10px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        .contenedor-carrusel {
-            position: relative;
-            width: 100%;
-            max-width: 517px; /* ✅ 470px + 10% = 517px */
-            height: 198px;    /* ✅ 180px + 10% = 198px */
-            border-radius: 10px;
-            overflow: hidden;
-            margin: 0 auto;
-        }
-        .carrusel {
-            display: flex;
-            width: 200%;
-            height: 100%;
-            transition: transform 0.6s ease-in-out;
-        }
-        .enlace-diapositiva {
-            display: block;
-            width: 50%;
-            height: 100%;
-            cursor: pointer;
-            text-decoration: none;
-        }
-        .diapositiva {
-            width: 100%;
-            height: 100%;
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            transition: opacity 0.3s ease;
-        }
-        .enlace-diapositiva:hover .diapositiva {
-            opacity: 0.92;
-        }
-        .puntos-carrusel {
-            position: absolute;
-            bottom: 10px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 10px;
-        }
-        .punto {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.35);
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        .punto.activo {
-            background: #ffd700;
-            box-shadow: 0 0 6px rgba(255, 215, 0, 0.7);
-        }
-        .contenedor-reproductores {
-            display: flex;
-            flex-direction: row;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 20px;
-            width: 100%;
-            max-width: 620px;
-        }
-        .player-box {
-            flex: 1 1 260px;
-            min-width: 260px;
-            max-width: 295px;
-            background: rgba(0, 0, 0, 0.65);
-            padding: 17px 11px;
-            border-radius: 14px;
-            box-shadow: 0 6px 21px rgba(0, 0, 0, 0.4);
-            border: 1px solid rgba(255, 215, 0, 0.2);
-            text-align: center;
-        }
-        .titulo-reproductor {
-            color: #ffd700;
-            font-size: 11px;
-            font-weight: 700;
-            margin-bottom: 11px;
-            letter-spacing: 1px;
-            line-height: 1.4;
-        }
-        .live-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            background: rgba(220, 20, 60, 0.9);
-            color: white;
-            font-size: 9px;
-            font-weight: 700;
-            padding: 3px 8px;
-            border-radius: 50px;
-            margin-bottom: 12px;
-            animation: pulse 2s infinite;
-        }
-        .live-dot {
-            width: 6px; height: 6px;
-            background: white;
-            border-radius: 50%;
-            animation: blink 1s infinite alternate;
-        }
-        @keyframes pulse {
-            0%, 100% { box-shadow: 0 0 15px rgba(220, 20, 60, 0.4); }
-            50% { box-shadow: 0 0 25px rgba(220, 20, 60, 0.6); }
-        }
-        @keyframes blink {
-            0% { opacity: 1; }
-            100% { opacity: 0.3; }
-        }
-        .reproductor-centro {
-            display: flex; flex-direction: column;
-            align-items: center; margin: 7px 0;
-        }
-        .boton-play-triangulo {
-            width: 44px; height: 44px; border: none;
-            background: linear-gradient(135deg, #1a73e8 0%, #0d47a1 100%);
-            border-radius: 50%; cursor: pointer;
-            display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 3px 13px rgba(26, 115, 232, 0.4);
-            transition: transform 0.2s ease;
-        }
-        .boton-play-triangulo:active { transform: scale(0.95); }
-        .triangulo {
-            width: 0; height: 0;
-            border-top: 10px solid transparent;
-            border-bottom: 10px solid transparent;
-            border-left: 15px solid white;
-            margin-left: 3px;
-        }
-        .boton-play-triangulo.reproduciendo .triangulo {
-            border: none; width: 13px; height: 15px;
-            background: white;
-            clip-path: polygon(0 0, 35% 0, 35% 100%, 0 100%, 65% 0, 100% 0, 100% 100%, 65% 100%);
-        }
-        audio { display: none; }
-        .agradecimiento {
-            max-width: 320px;
-            text-align: center;
-            color: #ffd700;
-            font-size: 11px;
-            font-weight: 600;
-            padding: 12px 15px;
-            background: rgba(255, 215, 0, 0.08);
-            border-radius: 12px;
-            border: 1px solid rgba(255, 215, 0, 0.2);
-            margin-top: 8px;
-            line-height: 1.5;
-        }
-        .error-message {
-            margin-top: 10px;
-            color: #ffb5bf;
-            font-size: 10px;
-            min-height: 16px;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#10151c">
+  <meta name="description" content="Onda Frontera — radio online, música y compañía desde la frontera.">
+  <meta property="og:title" content="Onda Frontera · Radio online">
+  <meta property="og:description" content="Tu medio digital de la Triple Frontera: Paraguay, Brasil y Argentina.">
+  <meta property="og:image" content="onda-frontera-logo-emblema.png">
+  <title>Onda Frontera · Radio online</title>
+  <link rel="icon" href="onda-frontera-icono.png" type="image/png">
+  <link rel="apple-touch-icon" href="onda-frontera-logo-emblema.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink: #10151c;
+      --ink-soft: #1b232d;
+      --cream: #f3efe6;
+      --paper: #fbf9f4;
+      --muted: #a7adb2;
+      --line: rgba(255,255,255,.12);
+      --coral: #ff684c;
+      --coral-deep: #c84735;
+      --lime: #d8ed65;
+      --white: #fffdf8;
+      --shadow: 0 30px 80px rgba(6, 11, 17, .28);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; min-width: 320px; color: var(--white); background: var(--ink); font-family: 'DM Sans', system-ui, sans-serif; }
+    a { color: inherit; text-decoration: none; }
+    button { font: inherit; }
+    .skip-link { position: absolute; top: -44px; left: 20px; z-index: 20; background: var(--lime); color: var(--ink); padding: 10px 14px; border-radius: 7px; font-weight: 700; }
+    .skip-link:focus { top: 14px; }
+    .shell { max-width: 1240px; margin: 0 auto; padding: 0 32px; }
+    .topbar { display: flex; justify-content: space-between; align-items: center; padding: 27px 0; border-bottom: 1px solid var(--line); }
+    .wordmark { display: inline-flex; align-items: center; gap: 11px; font-size: 14px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
+    .wordmark-mark { width: 34px; height: 34px; object-fit: cover; border: 2px solid var(--lime); border-radius: 50%; box-shadow: 0 0 0 4px rgba(216,237,101,.08); }
+    .topnav { display: flex; gap: 28px; color: var(--muted); font-size: 13px; font-weight: 600; }
+    .topnav a { transition: color .2s ease; }
+    .topnav a:hover, .topnav a:focus-visible { color: var(--lime); }
+    .status { display: inline-flex; align-items: center; gap: 8px; color: var(--lime); font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+    .status-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--coral); box-shadow: 0 0 0 5px rgba(255,104,76,.15); animation: pulse 1.8s infinite; }
+    main { overflow: hidden; }
+    .hero { position: relative; display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(420px, .95fr); gap: clamp(30px, 8vw, 110px); align-items: center; padding: clamp(70px, 10vw, 130px) 0 100px; }
+    .hero::before { content: ''; position: absolute; left: -12%; top: 11%; width: 480px; height: 480px; border: 1px solid rgba(216,237,101,.11); border-radius: 50%; pointer-events: none; }
+    .hero::after { content: ''; position: absolute; left: 3%; top: 22%; width: 360px; height: 360px; border: 1px solid rgba(255,104,76,.15); border-radius: 50%; pointer-events: none; }
+    .eyebrow { display: flex; align-items: center; gap: 12px; margin-bottom: 25px; color: var(--coral); font-size: 12px; font-weight: 700; letter-spacing: .2em; text-transform: uppercase; }
+    .eyebrow::before { content: ''; width: 42px; height: 2px; background: var(--coral); }
+    h1 { position: relative; z-index: 1; max-width: 700px; margin: 0; font-family: 'Playfair Display', Georgia, serif; font-size: clamp(56px, 8vw, 104px); line-height: .92; letter-spacing: -.06em; font-weight: 700; }
+    h1 em { color: var(--lime); font-style: normal; }
+    .intro { max-width: 430px; margin: 30px 0 0; color: #c5c8c8; font-size: 17px; line-height: 1.65; }
+    .hero-note { display: flex; gap: 14px; align-items: center; margin-top: 43px; color: var(--muted); font-size: 12px; }
+    .hero-note strong { color: var(--white); font-weight: 600; }
+    .signal { display: flex; align-items: end; gap: 4px; height: 27px; }
+    .signal i { display: block; width: 4px; background: var(--coral); border-radius: 3px; animation: equalize 1.2s ease-in-out infinite alternate; }
+    .signal i:nth-child(1) { height: 9px; animation-delay: -.5s; } .signal i:nth-child(2) { height: 19px; animation-delay: -.2s; } .signal i:nth-child(3) { height: 27px; } .signal i:nth-child(4) { height: 14px; animation-delay: -.7s; } .signal i:nth-child(5) { height: 22px; animation-delay: -.3s; }
+    @keyframes equalize { to { transform: scaleY(.35); opacity: .5; } }
+    @keyframes pulse { 50% { box-shadow: 0 0 0 9px rgba(255,104,76,0); } }
+    .brand-cover { position: relative; width: min(100%, 560px); margin: 36px 0 0; overflow: hidden; aspect-ratio: 16 / 7; border: 1px solid rgba(255,255,255,.18); border-radius: 18px; box-shadow: 0 20px 46px rgba(0,0,0,.25); }
+    .brand-cover img { width: 100%; height: 100%; object-fit: cover; }
+    .brand-cover figcaption { position: absolute; left: 16px; bottom: 13px; color: rgba(255,255,255,.78); font-size: 10px; letter-spacing: .1em; text-transform: uppercase; }
+    .player { position: relative; z-index: 2; padding: 30px; background: linear-gradient(145deg, #242e38, #151d25); border: 1px solid rgba(255,255,255,.15); border-radius: 24px; box-shadow: var(--shadow); }
+    .player::before { content: ''; position: absolute; right: 28px; top: -12px; width: 76px; height: 76px; border-radius: 50%; border: 1px solid rgba(216,237,101,.28); }
+    .player-header { display: flex; justify-content: space-between; align-items: start; margin-bottom: 38px; }
+    .kicker { margin: 0 0 7px; color: var(--muted); font-size: 11px; font-weight: 700; letter-spacing: .17em; text-transform: uppercase; }
+    .now-title { margin: 0; color: var(--white); font-size: 22px; font-weight: 700; }
+    .live-label { display: inline-flex; align-items: center; gap: 7px; color: var(--coral); font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+    .cover { position: relative; display: grid; place-items: center; width: min(100%, 280px); aspect-ratio: 1; margin: 0 auto 28px; background: radial-gradient(circle at 45% 38%, rgba(216,237,101,.36), transparent 17%), radial-gradient(circle, #323e43 0 31%, #202a30 32% 53%, #151d24 54%); border: 1px solid rgba(255,255,255,.14); border-radius: 50%; box-shadow: 0 14px 38px rgba(0,0,0,.4); }
+    .cover::before, .cover::after { content: ''; position: absolute; width: 205px; height: 205px; border: 1px solid rgba(255,255,255,.1); border-radius: 50%; }
+    .cover::after { width: 125px; height: 125px; border-color: rgba(255,104,76,.35); }
+    .cover-center { position: relative; z-index: 1; display: grid; place-items: center; width: 118px; height: 118px; overflow: hidden; border: 4px solid var(--lime); border-radius: 50%; box-shadow: 0 0 0 8px rgba(216,237,101,.12); }
+    .cover-center img { width: 100%; height: 100%; object-fit: cover; }
+    .station-list { display: grid; gap: 8px; }
+    .station { display: flex; align-items: center; gap: 12px; width: 100%; padding: 13px 14px; color: #b9c0c2; background: rgba(255,255,255,.045); border: 1px solid transparent; border-radius: 12px; cursor: pointer; text-align: left; transition: .2s ease; }
+    .station:hover, .station:focus-visible { color: var(--white); background: rgba(255,255,255,.09); border-color: rgba(216,237,101,.35); outline: none; }
+    .station.active { color: var(--ink); background: var(--lime); }
+    .station-number { display: grid; place-items: center; width: 25px; height: 25px; flex: 0 0 25px; border: 1px solid currentColor; border-radius: 50%; font-size: 10px; font-weight: 700; }
+    .station-name { flex: 1; font-size: 13px; font-weight: 600; }
+    .station-genre { font-size: 10px; opacity: .72; }
+    .station-play { font-size: 13px; }
+    .player-controls { display: flex; align-items: center; gap: 17px; margin-top: 21px; padding-top: 20px; border-top: 1px solid var(--line); }
+    .play-button { display: grid; place-items: center; width: 52px; height: 52px; flex: 0 0 52px; color: var(--ink); background: var(--coral); border: 0; border-radius: 50%; cursor: pointer; box-shadow: 0 8px 22px rgba(255,104,76,.24); transition: transform .2s ease, background .2s ease; }
+    .play-button:hover, .play-button:focus-visible { background: #ff7d65; transform: scale(1.05); outline: 3px solid rgba(216,237,101,.5); outline-offset: 4px; }
+    .play-icon { width: 0; height: 0; margin-left: 3px; border-top: 8px solid transparent; border-bottom: 8px solid transparent; border-left: 12px solid currentColor; }
+    .play-button.is-playing .play-icon { width: 12px; height: 16px; margin: 0; border: 0; background: linear-gradient(90deg, currentColor 0 35%, transparent 35% 65%, currentColor 65%); }
+    .control-copy { min-width: 0; flex: 1; } .control-copy strong { display: block; overflow: hidden; color: var(--white); font-size: 13px; text-overflow: ellipsis; white-space: nowrap; } .control-copy span { display: block; margin-top: 4px; color: var(--muted); font-size: 11px; }
+    .audio-status { min-height: 16px; margin-top: 16px; color: #ffb5a8; font-size: 11px; }
+    .territory { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; padding: 24px; background: linear-gradient(135deg, #d8ed65, #b4db68); border-radius: 18px; color: var(--ink); }
+    .territory h2 { margin: 0; font-family: 'Playfair Display', Georgia, serif; font-size: 30px; letter-spacing: -.04em; }
+    .territory p { margin: 8px 0 0; color: rgba(16,21,28,.72); font-size: 12px; line-height: 1.5; }
+    .territory-actions { display: flex; flex-wrap: wrap; align-content: center; justify-content: end; gap: 8px; }
+    .territory-chip { padding: 10px 13px; color: var(--ink); background: rgba(255,255,255,.44); border: 1px solid rgba(16,21,28,.16); border-radius: 999px; font-size: 11px; font-weight: 700; }
+    .territory-chip:hover, .territory-chip:focus-visible { background: var(--ink); color: var(--lime); outline: none; }
+    .campaign-note { max-width: 520px; margin: 0; color: var(--muted); font-size: 13px; line-height: 1.55; }
+    .campaign-link { display: inline-flex; margin-top: 12px; color: var(--lime); font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
+    .campaign-link:hover, .campaign-link:focus-visible { color: var(--white); outline: none; text-decoration: underline; text-underline-offset: 4px; }
+    .campaign-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    .campaign-card { overflow: hidden; background: #1b232d; border: 1px solid var(--line); border-radius: 16px; }
+    .campaign-card img { display: block; width: 100%; aspect-ratio: 4 / 5; object-fit: cover; }
+    .campaign-copy { padding: 15px 16px 17px; }
+    .campaign-copy small { color: var(--coral); font-size: 10px; font-weight: 700; letter-spacing: .13em; text-transform: uppercase; }
+    .campaign-copy strong { display: block; margin-top: 8px; color: var(--white); font-family: 'Playfair Display', Georgia, serif; font-size: 20px; }
+    .campaign-copy span { display: block; margin-top: 7px; color: var(--muted); font-size: 11px; line-height: 1.45; }
+    .campaign-article-link { display: inline-block; margin-top: 11px; color: var(--lime); font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+    .campaign-article-link:hover, .campaign-article-link:focus-visible { color: var(--white); text-decoration: underline; text-underline-offset: 3px; outline: none; }
+    .section { padding: 0 0 100px; }
+    .section-heading { display: flex; align-items: end; justify-content: space-between; gap: 20px; margin-bottom: 24px; }
+    .section-heading h2 { margin: 0; font-family: 'Playfair Display', Georgia, serif; font-size: clamp(31px, 4vw, 48px); letter-spacing: -.04em; }
+    .section-heading p { max-width: 310px; margin: 0; color: var(--muted); font-size: 13px; line-height: 1.55; text-align: right; }
+    .sponsor-wrap { padding: 18px; background: var(--paper); border-radius: 18px; color: var(--ink); }
+    .sponsor-top { display: flex; justify-content: space-between; align-items: center; margin: 0 8px 13px; color: #687078; font-size: 10px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; }
+    .sponsor-tools { display: flex; align-items: center; gap: 15px; }
+    .carousel-toggle { padding: 0; color: #687078; background: transparent; border: 0; cursor: pointer; font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+    .carousel-toggle:hover, .carousel-toggle:focus-visible { color: var(--coral-deep); outline: 2px solid rgba(200,71,53,.25); outline-offset: 4px; }
+    .carousel { position: relative; overflow: hidden; border-radius: 12px; }
+    .slides { display: flex; transition: transform .5s cubic-bezier(.2,.8,.2,1); }
+    .slide { position: relative; min-width: 100%; height: 205px; background-position: center; background-size: cover; }
+    .slide::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(10,15,21,.65), transparent 65%); }
+    .slide-copy { position: absolute; z-index: 1; left: 26px; bottom: 24px; color: white; } .slide-copy small { display: block; margin-bottom: 7px; color: var(--lime); font-size: 10px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; } .slide-copy strong { font-family: 'Playfair Display', serif; font-size: 27px; }
+    .carousel-dots { display: flex; gap: 7px; position: absolute; right: 20px; bottom: 19px; z-index: 2; } .dot { width: 7px; height: 7px; padding: 0; background: rgba(255,255,255,.45); border: 0; border-radius: 50%; cursor: pointer; } .dot.active { width: 22px; background: var(--lime); border-radius: 9px; }
+    footer { padding: 28px 0 38px; border-top: 1px solid var(--line); color: var(--muted); font-size: 12px; } .footer-inner { display: flex; justify-content: space-between; gap: 20px; } footer strong { color: var(--white); font-weight: 600; } .footer-link { color: var(--lime); }
+    @media (max-width: 800px) { .shell { padding: 0 20px; } .topnav { display: none; } .hero { grid-template-columns: 1fr; padding-top: 74px; } .hero::before { left: -45%; } .player { max-width: 540px; } .section-heading { align-items: start; flex-direction: column; } .section-heading p { max-width: 400px; text-align: left; } .territory { grid-template-columns: 1fr; } .territory-actions { justify-content: start; } .campaign-grid { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 500px) { .topbar { padding: 20px 0; } .status { font-size: 9px; } h1 { font-size: clamp(52px, 17vw, 82px); } .intro { font-size: 15px; } .hero { padding-bottom: 72px; } .brand-cover { margin-top: 28px; } .player { padding: 21px; border-radius: 18px; } .cover { width: 220px; } .cover::before { width: 165px; height: 165px; } .cover::after { width: 105px; height: 105px; } .station-genre { display: none; } .slide { height: 170px; } .campaign-grid { grid-template-columns: 1fr; } .footer-inner { flex-direction: column; } }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; } }
+  </style>
 </head>
 <body>
-    <!-- TU LOGO -->
-    <img src="https://github.com/milanmilano12222-stack/Ondafrontera/raw/main/IMG-20260818-WA0039.jpg" alt="Onda Frontera" class="logo-imagen">
-    <!-- 🎠 CARRUSEL DE AUSPICIANTES -->
-    <div class="espacio-auspiciante">
-        <p class="etiqueta-patrocinador">⭐ Auspiciantes Oficiales</p>
-        <div class="contenedor-carrusel">
-            <div class="carrusel" id="carrusel">
-                <!-- 🔗 IMAGEN 1 → Página de Marcos Velázquez -->
-                <a href="https://marcosvelazquez.vercel.app/" target="_blank" rel="noopener noreferrer" class="enlace-diapositiva">
-                    <div class="diapositiva" style="background-image: url('https://raw.githubusercontent.com/dennyslovera2007-pixel/Marcos-/main/IMG_20260730_140523.jpg');" title="Visitar Marcos Velázquez"></div>
-                </a>
-                <!-- 🔗 IMAGEN 2 → Página de Grupo Glomar -->
-                <a href="https://grupoglomar.vercel.app" target="_blank" rel="noopener noreferrer" class="enlace-diapositiva">
-                    <div class="diapositiva" style="background-image: url('https://raw.githubusercontent.com/dennyslovera2007-pixel/IMAGENES-/main/IMG-20260804-WA0040.jpg');" title="Visitar Grupo Glomar"></div>
-                </a>
-            </div>
-            <div class="puntos-carrusel">
-                <span class="punto activo" data-indice="0"></span>
-                <span class="punto" data-indice="1"></span>
-            </div>
+  <a class="skip-link" href="#radio">Saltar al reproductor</a>
+  <header class="shell topbar">
+    <a class="wordmark" href="#inicio" aria-label="Onda Frontera, inicio"><img class="wordmark-mark" src="onda-frontera-icono.png" alt=""> Onda Frontera</a>
+    <nav class="topnav" aria-label="Navegación principal"><a href="#radio">Escuchar</a><a href="#territorio">Territorio</a><a href="#auspiciantes">Auspiciantes</a><a href="#campana">Campaña</a></nav>
+    <div class="status"><span class="status-dot"></span> Señal online</div>
+  </header>
+
+  <main id="inicio">
+    <section class="shell hero" id="radio" aria-labelledby="hero-title">
+      <div>
+        <div class="eyebrow">Radio online · En vivo</div>
+        <h1 id="hero-title">Sonidos que cruzan <em>fronteras.</em></h1>
+        <p class="intro">Tu medio digital de la Triple Frontera. Una señal cercana para acompañarte entre Paraguay, Brasil y Argentina.</p>
+        <figure class="brand-cover"><img src="onda-frontera-portada-redes.png" alt="Cascada y paisaje de la Triple Frontera con la identidad de Onda Frontera"><figcaption>Salto Aguaray Guasu · Capitán Bado, PY</figcaption></figure>
+        <div class="hero-note"><span class="signal" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span><span><strong>Cuatro señales.</strong><br>Una misma compañía.</span></div>
+      </div>
+
+      <section class="player" aria-label="Reproductor de Onda Frontera">
+        <div class="player-header"><div><p class="kicker">Escuchando ahora</p><h2 class="now-title" id="nowTitle">Onda Frontera</h2></div><span class="live-label"><span class="status-dot"></span> En vivo</span></div>
+        <div class="cover" aria-hidden="true"><span class="cover-center"><img src="onda-frontera-icono.png" alt=""></span></div>
+        <div class="station-list" role="list" aria-label="Seleccionar señal">
+          <button class="station active" type="button" data-index="0" aria-pressed="true"><span class="station-number">01</span><span class="station-name">Onda Frontera</span><span class="station-genre">Señal principal</span><span class="station-play">●</span></button>
+          <button class="station" type="button" data-index="1" aria-pressed="false"><span class="station-number">02</span><span class="station-name">Reguetón 24/7</span><span class="station-genre">Ritmo urbano</span><span class="station-play">○</span></button>
+          <button class="station" type="button" data-index="2" aria-pressed="false"><span class="station-number">03</span><span class="station-name">Radio Cumbia</span><span class="station-genre">Sabor latino</span><span class="station-play">○</span></button>
+          <button class="station" type="button" data-index="3" aria-pressed="false"><span class="station-number">04</span><span class="station-name">Sertanejo Brasil</span><span class="station-genre">Desde Brasil</span><span class="station-play">○</span></button>
         </div>
-    </div>
-    <!-- 📡 REPRODUCTORES — 4 OPCIONES DE RADIO -->
-    <div class="contenedor-reproductores">
-        <!-- 1️⃣ TU RADIO ONDA FRONTERA -->
-        <div class="player-box">
-            <div class="live-badge">
-                <span class="live-dot"></span> EN VIVO AHORA
-            </div>
-            <p class="titulo-reproductor">📡 Onda Frontera</p>
-            <div class="reproductor-centro">
-                <button class="boton-play-triangulo" id="botonPlay1">
-                    <div class="triangulo"></div>
-                </button>
-                <audio id="audio1" preload="none">
-                    <source src="https://stream-291.surfernetwork.com/kd0p50swchruv?zt=eyJhbGciOiJIUzI1NiJ9.eyJzdHJlYW0iOiJrZDBwNTBzd2NocnV2IiwiaG9zdCI6InN0cmVhbS0yOTEuc3VyZmVybmV0d29yay5jb20iLCJydHRsIjo1LCJqdGkiOiJzcS1hRlVjNlIzZS1adE5QVXVxTVhBIiwiaWF0IjoxNzg3MTM3OTA1LCJleHAiOjE3ODcxMzc5NjV9.wKG5auIWgC-3EqzyHxAw4_MEIqRQTXGZYOSormpeRaM" type="audio/mpeg">
-                    Tu navegador no soporta audio.
-                
-                <p class="error-message" id="error1"></p>
-            </div>
-        </div>
-        <!-- 2️⃣ RADIO REGUETÓN -->
-        <div class="player-box">
-            <div class="live-badge">
-                <span class="live-dot"></span> EN VIVO
-            </div>
-            <p class="titulo-reproductor">🎙️ Reguetón 24/7</p>
-            <div class="reproductor-centro">
-                <button class="boton-play-triangulo" id="botonPlay2">
-                    <div class="triangulo"></div>
-                </button>
-                <audio id="audio2" preload="none">
-                    <source src="https://stream.zeno.fm/hf24gpx2p0quv" type="audio/mpeg">
-                    Tu navegador no soporta audio.
-                
-                <p class="error-message" id="error2"></p>
-            </div>
-        </div>
-        <!-- 3️⃣ RADIO CUMBIA -->
-        <div class="player-box">
-            <div class="live-badge">
-                <span class="live-dot"></span> EN VIVO
-            </div>
-            <p class="titulo-reproductor">🪗 Radio Cumbia</p>
-            <div class="reproductor-centro">
-                <button class="boton-play-triangulo" id="botonPlay3">
-                    <div class="triangulo"></div>
-                </button>
-                <audio id="audio3" preload="none">
-                    <source src="https://stream.zeno.fm/f4ese4m5prytv" type="audio/mpeg">
-                    Tu navegador no soporta audio.
-                
-                <p class="error-message" id="error3"></p>
-            </div>
-        </div>
-        <!-- 4️⃣ RADIO SERTANEJO BRASILEÑO -->
-        <div class="player-box">
-            <div class="live-badge">
-                <span class="live-dot"></span> EN VIVO
-            </div>
-            <p class="titulo-reproductor">🤠 Sertanejo Brasil</p>
-            <div class="reproductor-centro">
-                <button class="boton-play-triangulo" id="botonPlay4">
-                    <div class="triangulo"></div>
-                </button>
-                <audio id="audio4" preload="none">
-                    <source src="https://stm2.streaminghd.net.br:7318/stream" type="audio/mpeg">
-                    Tu navegador no soporta audio.
-                
-                <p class="error-message" id="error4"></p>
-            </div>
-        </div>
-    </div>
-    <!-- AGRADECIMIENTO -->
-    <p class="agradecimiento">
-        ✨ Esta radio online ha sido creado gracias al apoyo de Marcos Velázquez ✨
-    </p>
-    <script>
-        // 🎠 LÓGICA DEL CARRUSEL
-        const carrusel = document.getElementById('carrusel');
-        const puntos = document.querySelectorAll('.punto');
-        let indiceActual = 0;
-        const totalImagenes = 2;
-        function mostrarDiapositiva(indice) {
-            carrusel.style.transform = `translateX(-${indice * 50}%)`;
-            puntos.forEach((punto, i) => {
-                punto.classList.toggle('activo', i === indice);
-            });
-            indiceActual = indice;
-        }
-        function siguienteDiapositiva() {
-            const siguiente = (indiceActual + 1) % totalImagenes;
-            mostrarDiapositiva(siguiente);
-        }
-        puntos.forEach(punto => {
-            punto.addEventListener('click', () => {
-                mostrarDiapositiva(parseInt(punto.dataset.indice));
-            });
-        });
-        setInterval(siguienteDiapositiva, 5000);
-        // 🎵 FUNCIÓN COMÚN — PAUSAR TODOS LOS DEMÁS
-        function detenerTodosMenos(excepcionId) {
-            ['audio1','audio2','audio3','audio4'].forEach(id => {
-                if (id !== excepcionId) {
-                    const el = document.getElementById(id);
-                    const btnId = 'botonPlay' + id.replace('audio','');
-                    const btn = document.getElementById(btnId);
-                    el.pause();
-                    btn.classList.remove('reproduciendo');
-                }
-            });
-        }
-        // 📡 REPRODUCTOR 1 — ONDA FRONTERA
-        const audio1 = document.getElementById('audio1');
-        const botonPlay1 = document.getElementById('botonPlay1');
-        const error1 = document.getElementById('error1');
-        botonPlay1.addEventListener('click', async () => {
-            error1.textContent = '';
-            if (audio1.paused) {
-                try {
-                    detenerTodosMenos('audio1');
-                    await audio1.play();
-                    botonPlay1.classList.add('reproduciendo');
-                } catch {
-                    error1.textContent = 'Señal no disponible.';
-                }
-            } else {
-                audio1.pause();
-                botonPlay1.classList.remove('reproduciendo');
-            }
-        });
-        audio1.addEventListener('error', () => {
-            error1.textContent = 'Señal no disponible.';
-            botonPlay1.classList.remove('reproduciendo');
-        });
-        // 🎙️ REPRODUCTOR 2 — REGUETÓN
-        const audio2 = document.getElementById('audio2');
-        const botonPlay2 = document.getElementById('botonPlay2');
-        const error2 = document.getElementById('error2');
-        botonPlay2.addEventListener('click', async () => {
-            error2.textContent = '';
-            if (audio2.paused) {
-                try {
-                    detenerTodosMenos('audio2');
-                    await audio2.play();
-                    botonPlay2.classList.add('reproduciendo');
-                } catch {
-                    error2.textContent = 'Señal no disponible.';
-                }
-            } else {
-                audio2.pause();
-                botonPlay2.classList.remove('reproduciendo');
-            }
-        });
-        audio2.addEventListener('error', () => {
-            error2.textContent = 'Señal no disponible.';
-            botonPlay2.classList.remove('reproduciendo');
-        });
-        // 🪗 REPRODUCTOR 3 — CUMBIA
-        const audio3 = document.getElementById('audio3');
-        const botonPlay3 = document.getElementById('botonPlay3');
-        const error3 = document.getElementById('error3');
-        botonPlay3.addEventListener('click', async () => {
-            error3.textContent = '';
-            if (audio3.paused) {
-                try {
-                    detenerTodosMenos('audio3');
-                    await audio3.play();
-                    botonPlay3.classList.add('reproduciendo');
-                } catch {
-                    error3.textContent = 'Señal no disponible.';
-                }
-            } else {
-                audio3.pause();
-                botonPlay3.classList.remove('reproduciendo');
-            }
-        });
-        audio3.addEventListener('error', () => {
-            error3.textContent = 'Señal no disponible.';
-            botonPlay3.classList.remove('reproduciendo');
-        });
-        // 🤠 REPRODUCTOR 4 — SERTANEJO BRASILEÑO
-        const audio4 = document.getElementById('audio4');
-        const botonPlay4 = document.getElementById('botonPlay4');
-        const error4 = document.getElementById('error4');
-        botonPlay4.addEventListener('click', async () => {
-            error4.textContent = '';
-            if (audio4.paused) {
-                try {
-                    detenerTodosMenos('audio4');
-                    await audio4.play();
-                    botonPlay4.classList.add('reproduciendo');
-                } catch {
-                    error4.textContent = 'Señal no disponible.';
-                }
-            } else {
-                audio4.pause();
-                botonPlay4.classList.remove('reproduciendo');
-            }
-        });
-        audio4.addEventListener('error', () => {
-            error4.textContent = 'Señal no disponible.';
-            botonPlay4.classList.remove('reproduciendo');
-        });
-    </script>
+        <div class="player-controls"><button class="play-button" id="playButton" type="button" aria-label="Reproducir Onda Frontera" aria-pressed="false"><span class="play-icon" aria-hidden="true"></span></button><div class="control-copy"><strong id="controlTitle">Onda Frontera</strong><span id="controlHint">Tocá para comenzar la transmisión</span></div></div>
+        <div class="audio-status" id="audioStatus" role="status" aria-live="polite"></div>
+        <audio id="audio0" preload="none"><source src="https://stream-291.surfernetwork.com/kd0p50swchruv" type="audio/mpeg"></audio>
+        <audio id="audio1" preload="none"><source src="https://stream.zeno.fm/hf24gpx2p0quv" type="audio/mpeg"></audio>
+        <audio id="audio2" preload="none"><source src="https://stream.zeno.fm/f4ese4m5prytv" type="audio/mpeg"></audio>
+        <audio id="audio3" preload="none"><source src="https://stm2.streaminghd.net.br:7318/stream" type="audio/mpeg"></audio>
+      </section>
+    </section>
+
+    <section class="shell section" id="territorio" aria-labelledby="territory-title">
+      <div class="territory"><div><h2 id="territory-title">La frontera, en tres voces.</h2><p>Elegí el territorio que querés descubrir. Esta capa queda lista para conectar futuras noticias, programas y agenda local.</p></div><div class="territory-actions" aria-label="Territorios de cobertura"><a class="territory-chip" href="#radio">Paraguay · PY</a><a class="territory-chip" href="#radio">Brasil · BR</a><a class="territory-chip" href="#radio">Argentina · AR</a><a class="territory-chip" href="#radio">Español</a><a class="territory-chip" href="#radio">Português</a><a class="territory-chip" href="#radio">Guaraní</a></div></div>
+    </section>
+
+    <section class="shell section" id="auspiciantes" aria-labelledby="sponsors-title">
+      <div class="section-heading"><h2 id="sponsors-title">Quienes hacen<br>posible la señal.</h2><p>Conocé a nuestros auspiciantes oficiales y visitá sus espacios.</p></div>
+      <div class="sponsor-wrap"><div class="sponsor-top"><span>Auspiciantes oficiales</span><span class="sponsor-tools"><button class="carousel-toggle" id="carouselToggle" type="button" aria-pressed="false">Pausar</button><span id="slideCount">01 / 02</span></span></div><div class="carousel"><div class="slides" id="slides"><a class="slide" href="https://github.com/milanmilano12222-stack/Ondafrontera" target="_blank" rel="noopener noreferrer" style="background-image:url('https://raw.githubusercontent.com/dennyslovera2007-pixel/Marcos-/main/IMG_20260730_140523.jpg')" aria-label="Visitar el proyecto de Marcos Velázquez"><span class="slide-copy"><small>Conocé su trabajo</small><strong>Marcos Velázquez</strong></span></a><a class="slide" href="https://grupoglomar.vercel.app" target="_blank" rel="noopener noreferrer" style="background-image:url('https://raw.githubusercontent.com/dennyslovera2007-pixel/IMAGENES-/main/IMG-20260804-WA0040.jpg')" aria-label="Visitar Grupo Glomar"><span class="slide-copy"><small>Un aliado de la comunidad</small><strong>Grupo Glomar</strong></span></a></div><div class="carousel-dots"><button class="dot active" type="button" data-slide="0" aria-label="Mostrar auspiciante 1" aria-current="true"></button><button class="dot" type="button" data-slide="1" aria-label="Mostrar auspiciante 2"></button></div></div></div>
+    </section>
+
+    <section class="shell section" id="campana" aria-labelledby="campaign-title">
+      <div class="section-heading"><div><h2 id="campaign-title">Voces de la frontera.</h2><p class="campaign-note">Piezas visuales compartidas por la comunidad para informar y acompañar una campaña. Esta galería está separada de los auspiciantes y no representa por sí sola una postura editorial de la emisora.</p><a class="campaign-link" href="https://www.facebook.com/willian.cristaldo.borjas.2025" target="_blank" rel="noopener noreferrer">Ver página de Facebook ↗</a></div><span class="status">Contenido comunitario</span></div>
+      <div class="campaign-grid">
+        <article class="campaign-card"><a href="https://www.laclave.com.py/2025/10/10/joven-empresario-recupera-su-libertad-tras-cuatro-meses-de-prision-injusta/" target="_blank" rel="noopener noreferrer"><img src="campana-justicia-marco.jpg" alt="Pieza de campaña sobre el caso de Marco Enmanuel González"></a><div class="campaign-copy"><small>Caso comunitario</small><strong>Marco Enmanuel González</strong><span>El artículo enlazado informa sobre su liberación tras cuatro meses en Emboscada y relata el proceso judicial cuestionado.</span><a class="campaign-article-link" href="https://www.laclave.com.py/2025/10/10/joven-empresario-recupera-su-libertad-tras-cuatro-meses-de-prision-injusta/" target="_blank" rel="noopener noreferrer">Leer artículo en La Clave ↗</a><a class="campaign-article-link" href="https://www.youtube.com/watch?v=7gvZSmnPvzo" target="_blank" rel="noopener noreferrer">Ver video en YouTube ↗</a></div></article>
+        <article class="campaign-card"><img src="campana-libertad-marco.jpg" alt="Pieza de campaña con el mensaje La libertad no debería venderse por dinero ni presión política"><div class="campaign-copy"><small>Campaña comunitaria</small><strong>Libertad y transparencia</strong><span>Contenido de opinión social presentado con identificación independiente del player.</span></div></article>
+        <article class="campaign-card"><img src="campana-juzgado-caacupe.jpg" alt="Pieza de campaña sobre justicia frente al Palacio de Justicia de Caacupé"><div class="campaign-copy"><small>Campaña comunitaria</small><strong>La justicia es una medida</strong><span>Imagen local de referencia para una futura sección de campañas y comunidad.</span></div></article>
+      </div>
+    </section>
+  </main>
+
+  <footer id="contacto"><div class="shell footer-inner"><span>© Onda Frontera · Radio online</span><span>Creada con el apoyo de <a class="footer-link" href="https://github.com/milanmilano12222-stack/Ondafrontera" target="_blank" rel="noopener noreferrer"><strong>Marcos Velázquez</strong></a></span></div></footer>
+  <script>
+    const stations = ['Onda Frontera', 'Reguetón 24/7', 'Radio Cumbia', 'Sertanejo Brasil'];
+    const audios = stations.map((_, i) => document.getElementById(`audio${i}`));
+    const buttons = [...document.querySelectorAll('.station')];
+    const playButton = document.getElementById('playButton');
+    const nowTitle = document.getElementById('nowTitle');
+    const controlTitle = document.getElementById('controlTitle');
+    const controlHint = document.getElementById('controlHint');
+    const status = document.getElementById('audioStatus');
+    let current = 0;
+    let playing = false;
+
+    function selectStation(index) {
+      current = index;
+      buttons.forEach((button, i) => {
+        const active = i === index;
+        button.classList.toggle('active', active);
+        button.setAttribute('aria-pressed', String(active));
+        button.querySelector('.station-play').textContent = active ? '●' : '○';
+      });
+      nowTitle.textContent = stations[index];
+      controlTitle.textContent = stations[index];
+      playButton.setAttribute('aria-label', `${playing ? 'Pausar' : 'Reproducir'} ${stations[index]}`);
+      status.textContent = '';
+    }
+    function stopOthers() { audios.forEach((audio, i) => { if (i !== current) audio.pause(); }); }
+    async function toggleAudio() {
+      const audio = audios[current];
+      status.textContent = '';
+      if (audio.paused) {
+        try { stopOthers(); controlHint.textContent = 'Conectando con la transmisión…'; await audio.play(); playing = true; controlHint.textContent = 'Señal activa · escuchando en vivo'; }
+        catch { playing = false; status.textContent = 'No pudimos conectar con esta señal. Probá nuevamente en unos segundos.'; controlHint.textContent = 'Tocá para intentar otra vez'; }
+      } else { audio.pause(); playing = false; controlHint.textContent = 'Tocá para continuar la transmisión'; }
+      playButton.classList.toggle('is-playing', playing); playButton.setAttribute('aria-pressed', String(playing)); playButton.setAttribute('aria-label', `${playing ? 'Pausar' : 'Reproducir'} ${stations[current]}`);
+    }
+    buttons.forEach((button, index) => button.addEventListener('click', () => { if (index !== current && playing) audios[current].pause(); selectStation(index); playing = false; playButton.classList.remove('is-playing'); playButton.setAttribute('aria-pressed', 'false'); controlHint.textContent = 'Tocá para comenzar la transmisión'; toggleAudio(); }));
+    playButton.addEventListener('click', toggleAudio);
+    audios.forEach(audio => audio.addEventListener('error', () => { playing = false; playButton.classList.remove('is-playing'); status.textContent = 'Señal no disponible por el momento.'; controlHint.textContent = 'Tocá para intentar otra vez'; }));
+
+    const slides = document.getElementById('slides'); const dots = [...document.querySelectorAll('.dot')]; const slideCount = document.getElementById('slideCount'); const carouselToggle = document.getElementById('carouselToggle'); let slideIndex = 0; let carouselPaused = window.matchMedia('(prefers-reduced-motion: reduce)').matches; let carouselTimer;
+    function showSlide(index) { slideIndex = index; slides.style.transform = `translateX(-${index * 100}%)`; dots.forEach((dot, i) => { dot.classList.toggle('active', i === index); dot.setAttribute('aria-current', i === index ? 'true' : 'false'); }); slideCount.textContent = `0${index + 1} / 02`; }
+    dots.forEach(dot => dot.addEventListener('click', () => showSlide(Number(dot.dataset.slide))));
+    function updateCarouselTimer() { clearInterval(carouselTimer); if (!carouselPaused) carouselTimer = setInterval(() => showSlide((slideIndex + 1) % 2), 5500); carouselToggle.textContent = carouselPaused ? 'Reanudar' : 'Pausar'; carouselToggle.setAttribute('aria-pressed', String(carouselPaused)); }
+    carouselToggle.addEventListener('click', () => { carouselPaused = !carouselPaused; updateCarouselTimer(); });
+    updateCarouselTimer();
+  </script>
 </body>
 </html>
