@@ -112,6 +112,13 @@
     .section-heading h2 { margin: 0; font-family: 'Playfair Display', Georgia, serif; font-size: clamp(31px, 4vw, 48px); letter-spacing: -.04em; }
     .section-heading p { max-width: 310px; margin: 0; color: var(--muted); font-size: 13px; line-height: 1.55; text-align: right; }
     .sponsor-wrap { padding: 18px; background: var(--paper); border-radius: 18px; color: var(--ink); }
+    .sponsor-empty { display: flex; align-items: center; gap: 24px; min-height: 190px; padding: 28px; background: linear-gradient(120deg, #f3efe6, #dfe5d6); border-radius: 14px; color: var(--ink); }
+    .sponsor-empty img { width: 220px; height: 220px; object-fit: cover; flex: 0 0 220px; }
+    .sponsor-empty small { display: block; color: var(--coral-deep); font-size: 10px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
+    .sponsor-empty h3 { max-width: 480px; margin: 8px 0 7px; font-family: 'Playfair Display', Georgia, serif; font-size: clamp(24px, 4vw, 38px); line-height: 1; letter-spacing: -.04em; }
+    .sponsor-empty p { max-width: 520px; margin: 0; color: #687078; font-size: 13px; line-height: 1.55; }
+    .sponsor-link { display: inline-block; margin-top: 13px; color: var(--coral-deep); font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
+    .sponsor-link:hover, .sponsor-link:focus-visible { color: var(--ink); text-decoration: underline; text-underline-offset: 3px; outline: none; }
     .sponsor-top { display: flex; justify-content: space-between; align-items: center; margin: 0 8px 13px; color: #687078; font-size: 10px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; }
     .sponsor-tools { display: flex; align-items: center; gap: 15px; }
     .carousel-toggle { padding: 0; color: #687078; background: transparent; border: 0; cursor: pointer; font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
@@ -124,7 +131,7 @@
     .carousel-dots { display: flex; gap: 7px; position: absolute; right: 20px; bottom: 19px; z-index: 2; } .dot { width: 7px; height: 7px; padding: 0; background: rgba(255,255,255,.45); border: 0; border-radius: 50%; cursor: pointer; } .dot.active { width: 22px; background: var(--lime); border-radius: 9px; }
     footer { padding: 28px 0 38px; border-top: 1px solid var(--line); color: var(--muted); font-size: 12px; } .footer-inner { display: flex; justify-content: space-between; gap: 20px; } footer strong { color: var(--white); font-weight: 600; } .footer-link { color: var(--lime); }
     @media (max-width: 800px) { .shell { padding: 0 20px; } .topnav { display: none; } .hero { grid-template-columns: 1fr; padding-top: 74px; } .hero::before { left: -45%; } .player { max-width: 540px; } .section-heading { align-items: start; flex-direction: column; } .section-heading p { max-width: 400px; text-align: left; } .territory { grid-template-columns: 1fr; } .territory-actions { justify-content: start; } .campaign-grid { grid-template-columns: 1fr 1fr; } }
-    @media (max-width: 500px) { .topbar { padding: 20px 0; } .status { font-size: 9px; } h1 { font-size: clamp(52px, 17vw, 82px); } .intro { font-size: 15px; } .hero { padding-bottom: 72px; } .brand-cover { margin-top: 28px; } .player { padding: 21px; border-radius: 18px; } .cover { width: 220px; } .cover::before { width: 165px; height: 165px; } .cover::after { width: 105px; height: 105px; } .station-genre { display: none; } .slide { height: 170px; } .campaign-grid { grid-template-columns: 1fr; } .footer-inner { flex-direction: column; } }
+    @media (max-width: 500px) { .topbar { padding: 20px 0; } .status { font-size: 9px; } h1 { font-size: clamp(52px, 17vw, 82px); } .intro { font-size: 15px; } .hero { padding-bottom: 72px; } .brand-cover { margin-top: 28px; } .player { padding: 21px; border-radius: 18px; } .cover { width: 220px; } .cover::before { width: 165px; height: 165px; } .cover::after { width: 105px; height: 105px; } .station-genre { display: none; } .slide { height: 170px; } .sponsor-empty { align-items: flex-start; flex-direction: column; } .campaign-grid { grid-template-columns: 1fr; } .footer-inner { flex-direction: column; } }
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; } }
   </style>
 </head>
@@ -170,7 +177,7 @@
 
     <section class="shell section" id="auspiciantes" aria-labelledby="sponsors-title">
       <div class="section-heading"><h2 id="sponsors-title">Quienes hacen<br>posible la señal.</h2><p>Conocé a nuestros auspiciantes oficiales y visitá sus espacios.</p></div>
-      <div class="sponsor-wrap"><div class="sponsor-top"><span>Auspiciantes oficiales</span><span class="sponsor-tools"><button class="carousel-toggle" id="carouselToggle" type="button" aria-pressed="false">Pausar</button><span id="slideCount">01 / 02</span></span></div><div class="carousel"><div class="slides" id="slides"><a class="slide" href="https://github.com/milanmilano12222-stack/Ondafrontera" target="_blank" rel="noopener noreferrer" style="background-image:url('https://raw.githubusercontent.com/dennyslovera2007-pixel/Marcos-/main/IMG_20260730_140523.jpg')" aria-label="Visitar el proyecto de Marcos Velázquez"><span class="slide-copy"><small>Conocé su trabajo</small><strong>Marcos Velázquez</strong></span></a><a class="slide" href="https://grupoglomar.vercel.app" target="_blank" rel="noopener noreferrer" style="background-image:url('https://raw.githubusercontent.com/dennyslovera2007-pixel/IMAGENES-/main/IMG-20260804-WA0040.jpg')" aria-label="Visitar Grupo Glomar"><span class="slide-copy"><small>Un aliado de la comunidad</small><strong>Grupo Glomar</strong></span></a></div><div class="carousel-dots"><button class="dot active" type="button" data-slide="0" aria-label="Mostrar auspiciante 1" aria-current="true"></button><button class="dot" type="button" data-slide="1" aria-label="Mostrar auspiciante 2"></button></div></div></div>
+      <div class="sponsor-wrap"><div class="sponsor-top"><span>Auspiciantes oficiales</span><span>Grupo Glomar</span></div><div class="sponsor-empty"><img src="grupo-glomar.jpg" alt="Logo de Grupo Glomar E.A.S."><div><small>Publicidad local</small><h3>Grupo Glomar E.A.S.</h3><p>Una marca que acompaña a Onda Frontera. La imagen está alojada localmente para evitar fallos de carga y conservar un encuadre limpio.</p><a class="sponsor-link" href="https://grupoglomar.vercel.app" target="_blank" rel="noopener noreferrer">Visitar Grupo Glomar ↗</a></div></div></div>
     </section>
 
     <section class="shell section" id="campana" aria-labelledby="campaign-title">
@@ -223,12 +230,6 @@
     playButton.addEventListener('click', toggleAudio);
     audios.forEach(audio => audio.addEventListener('error', () => { playing = false; playButton.classList.remove('is-playing'); status.textContent = 'Señal no disponible por el momento.'; controlHint.textContent = 'Tocá para intentar otra vez'; }));
 
-    const slides = document.getElementById('slides'); const dots = [...document.querySelectorAll('.dot')]; const slideCount = document.getElementById('slideCount'); const carouselToggle = document.getElementById('carouselToggle'); let slideIndex = 0; let carouselPaused = window.matchMedia('(prefers-reduced-motion: reduce)').matches; let carouselTimer;
-    function showSlide(index) { slideIndex = index; slides.style.transform = `translateX(-${index * 100}%)`; dots.forEach((dot, i) => { dot.classList.toggle('active', i === index); dot.setAttribute('aria-current', i === index ? 'true' : 'false'); }); slideCount.textContent = `0${index + 1} / 02`; }
-    dots.forEach(dot => dot.addEventListener('click', () => showSlide(Number(dot.dataset.slide))));
-    function updateCarouselTimer() { clearInterval(carouselTimer); if (!carouselPaused) carouselTimer = setInterval(() => showSlide((slideIndex + 1) % 2), 5500); carouselToggle.textContent = carouselPaused ? 'Reanudar' : 'Pausar'; carouselToggle.setAttribute('aria-pressed', String(carouselPaused)); }
-    carouselToggle.addEventListener('click', () => { carouselPaused = !carouselPaused; updateCarouselTimer(); });
-    updateCarouselTimer();
   </script>
 </body>
 </html>
